@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
-import { IQuotation } from './models/quotation'
+import { IItem } from './models/lineItem'
 import './App.css'
 
 function App() {
-  const [quotations, setQuotations] = useState<IQuotation[]>([])
+  const [quotations, setQuotations] = useState<IItem[]>([])
 
   useEffect(() => {
     async function loadQuotations() {
       try {
-        const response = await fetch('/proxy/api/quotations', {
+        const response = await fetch('/proxy/api/items', {
           method: 'GET'
         })
 

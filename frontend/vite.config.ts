@@ -10,7 +10,10 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/proxy/, '')
       }
-    }
+    },
+    watch: {
+      usePolling: true,
+    },
   },
   plugins: [react()]
 })
