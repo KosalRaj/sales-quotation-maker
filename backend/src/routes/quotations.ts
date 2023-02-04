@@ -5,6 +5,10 @@ const router = express.Router()
 
 router.get('/', QuotationsController.getQuotations)
 
+router.get('/all', QuotationsController.getDetailQuotations)
+
+router.get('/latest', QuotationsController.getLatestQuotationId)
+
 router.post('/', QuotationsController.createQuotation)
 
 router.get('/:id', QuotationsController.getQuotationById)

@@ -4,7 +4,7 @@ const LineItemRow = ({ item, itemCount }) => {
   return (
     <tr className="border">
       <td className="border">{itemCount}</td>
-      <td className="border" className="text-left">
+      <td className="border text-left">
         <div className="font-bold">{item.name}</div>
         <div className="make">{item.manufacturer}</div>
         <div className="description">{item.description}</div>

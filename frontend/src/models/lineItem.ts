@@ -1,7 +1,7 @@
 export interface ITabularSpecs {
   _id: string
   key: string
-  value: string
+  value: unknown
 }
 
 export interface IItem {
@@ -16,4 +16,5 @@ export interface IItem {
   unitPrice: number
   createdAt: string
   updatedAt: string
+  __v: number
 }

@@ -1,0 +1,16 @@
+#navigation {
+  height: calc(100vh - var(--header-height));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+nav ul {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+}
+
+nav ul li {
+  list-style: none;
+}

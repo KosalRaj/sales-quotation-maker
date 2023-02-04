@@ -14,6 +14,20 @@ export const getQuotations: RequestHandler = async (req, res, next) => {
   }
 }
 
+export const getDetailQuotations: RequestHandler = async (req, res, next) => {
+  try {
+    const quotations = await QuotationModel.find()
+      .populate({
+        path: 'lineItems.itemInfo',
+        model: ItemModel
+      })
+      .exec()
+    res.status(200).json(quotations)
+  } catch (error) {
+    next(error)
+  }
+}
+
 interface CreateQuotationBody {
   quotationId?: string
   priceTerm?: string
@@ -197,7 +211,7 @@ export const deleteQuotation: RequestHandler = async (req, res, next) => {
 
   try {
     const quotation = await QuotationModel.findById(id)
-
+    
     if (quotation === null || quotation === undefined) {
       res.status(404).json({ message: 'Item not found' })
     }
@@ -209,3 +223,20 @@ export const deleteQuotation: RequestHandler = async (req, res, next) => {
     next(error)
   }
 }
+
+export const getLatestQuotationId: RequestHandler = async (req, res, next) => {
+  try {
+    const quotation = await QuotationModel.findOne({}).sort({
+      createdAt: -1
+    })
+
+    if (quotation === null || quotation === undefined) {
+      res.status(404).json({ message: 'Item not found' })
+    }
+
+    res.json(quotation)
+  } catch (error) {
+    next(error)
+  }
+}
+

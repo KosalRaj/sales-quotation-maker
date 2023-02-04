@@ -8,20 +8,27 @@ const userSchema = new Schema(
       index: true,
       unique: true
     },
-    password: {
+    firstname: {
+      type: String,
+      required: true
+    },
+    lastname: {
+      type: String,
+      required: true
+    },
+    passwordDigest: {
       type: String,
       required: true
     },
     email: {
       type: String,
-      required: true,
-      index: true,
       unique: true
     },
     role: {
       type: String,
       required: true
-    }
+    },
+    rememberToken: String
   },
   { timestamps: true }
 )
