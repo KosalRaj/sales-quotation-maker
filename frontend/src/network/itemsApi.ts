@@ -49,6 +49,18 @@ export async function createItem(item: IItemInput): Promise<IItem> {
   return response.json()
 }
 
+export async function updateItem(itemId: string, item: IItemInput): Promise<IItem> {
+  const response = await fetchData('proxy/api/items/' + itemId, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(item)
+  })
+
+  return response.json();
+}
+
 export async function deleteItem(itemId: string) {
-  await fetchData('/proxy/items/' + itemId, { method: "DELETE" })
+  await fetchData('/proxy/api/items/' + itemId, { method: "DELETE" })
 }

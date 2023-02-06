@@ -16,59 +16,7 @@ import AddItemDialogue from '../AddItemDialogue/AddItemDialogue'
 //   items: IItem[]
 // }
 
-async function deleteItem(item: IItem) {
-  try {
-    await ItemsApi.deleteItem(item._id)
-  } catch (error) {
-    console.error(error)
-    alert(error)
-  }
-}
-
-const columnHelper = createColumnHelper<IItem>()
-
-const columns = [
-  {
-    accessorKey: 'itemName',
-    header: 'Item Name'
-  },
-  columnHelper.accessor('manufacturer', {
-    header: 'Maker'
-  }),
-  columnHelper.accessor('itemModel', {
-    header: 'Model',
-    cell: (info) => info.getValue()
-  }),
-  columnHelper.accessor('itemProps', {
-    header: () => <span>Description</span>
-  }),
-  columnHelper.accessor('itemUom', {
-    header: 'UOM'
-  }),
-  columnHelper.accessor('unitPrice', {
-    header: 'Unit Price'
-  }),
-  columnHelper.accessor(row => row, {
-    id: 'deleteItem',
-    cell: (row) => <IconButton
-      aria-label='Delete item'
-      variant='link'
-      colorScheme='red'
-      icon={<FiTrash2 />}
-      onClick={
-        (e) => {
-          console.log(row.row.original)
-          deleteItem(row.row.original)
-          e.stopPropagation()
-        }
-      }
-    />,
-    header: ''
-  })
-]
-
 const ItemList = () => {
-
   const [data, setItems] = useState<IItem[]>([])
 
   useEffect(() => {
@@ -84,6 +32,58 @@ const ItemList = () => {
     loadItems()
   }, [])
 
+  async function deleteItem(item: IItem) {
+    console.log(item)
+    try {
+      await ItemsApi.deleteItem(item._id)
+      setItems(data.filter(updatedData => updatedData._id !== item._id))
+    } catch (error) {
+      console.error(error)
+      alert(error)
+    }
+  }
+
+  const columnHelper = createColumnHelper<IItem>()
+
+  const columns = [
+    {
+      accessorKey: 'itemName',
+      header: 'Item Name'
+    },
+    columnHelper.accessor('manufacturer', {
+      header: 'Maker'
+    }),
+    columnHelper.accessor('itemModel', {
+      header: 'Model',
+      cell: (info) => info.getValue()
+    }),
+    columnHelper.accessor('itemProps', {
+      header: () => <span>Description</span>
+    }),
+    columnHelper.accessor('itemUom', {
+      header: 'UOM'
+    }),
+    columnHelper.accessor('unitPrice', {
+      header: 'Unit Price'
+    }),
+    columnHelper.accessor((row) => row, {
+      id: 'deleteItem',
+      cell: (row) => (
+        <IconButton
+          aria-label="Delete item"
+          variant="link"
+          colorScheme="red"
+          icon={<FiTrash2 />}
+          onClick={(e) => {
+            deleteItem(row.row.original)
+            e.stopPropagation()
+          }}
+        />
+      ),
+      header: ''
+    })
+  ]
+
   const table = useReactTable({
     data,
     columns,
@@ -91,50 +91,52 @@ const ItemList = () => {
   })
 
   return (
-    <Container maxW='container.lg' my={8}>
+    <Container maxW="container.lg" my={8}>
       <div>
         {data.length === 0 ? (
           <Spinner />
         ) : (
-            <table className="table">
-              <thead>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <th className="th" key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody className="table__body">
-                {table.getRowModel().rows.map((row) => (
-                  <tr key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <table className="table">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th className="th" key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody className="table__body">
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
 
       <Flex mt={4}>
-        <AddItemDialogue onItemSaved={(newItem) => {
-          setItems([...data, newItem])
-        }} />
+        <AddItemDialogue
+          onItemSaved={(newItem) => {
+            setItems([...data, newItem])
+          }}
+        />
       </Flex>
     </Container>
   )
