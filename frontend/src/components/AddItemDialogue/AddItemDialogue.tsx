@@ -29,13 +29,14 @@ interface AddItemDialogue {
 const AddItemDialogue = ({ onItemSaved }: AddItemDialogue) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const { register, handleSubmit, formState : {errors, isSubmitting} } = useForm<IItemInput>()
+  const { register, handleSubmit, reset, formState : {errors, isSubmitting} } = useForm<IItemInput>()
 
   async function onSubmit(input: IItemInput) {
     console.log(input)
     try {
       const itemResponse = await ItemsApi.createItem(input)
       onItemSaved(itemResponse)
+      reset()
     } catch (error) {
       console.error(error)
       alert(error)
@@ -103,8 +104,8 @@ const AddItemDialogue = ({ onItemSaved }: AddItemDialogue) => {
                     id="itemProps"
                     placeholder="List Properties"
                     {...register('itemProps', {
-                      setValueAs: v => {
-                        if (typeof v === 'string' && v.length > 0 ) {
+                      setValueAs: (v) => {
+                        if (typeof v === 'string' && v.length > 0) {
                           return v.split('\n')
                         }
                         return []
@@ -112,7 +113,7 @@ const AddItemDialogue = ({ onItemSaved }: AddItemDialogue) => {
                     })}
                   />
                 </FormControl>
-                <FormControl>
+                <FormControl isInvalid={!!errors.itemUom}>
                   <FormLabel>UOM</FormLabel>
                   <Select
                     id="itemUom"
@@ -129,14 +130,14 @@ const AddItemDialogue = ({ onItemSaved }: AddItemDialogue) => {
                     {errors.itemUom && errors.itemUom?.message}
                   </FormErrorMessage>
                 </FormControl>
-                <FormControl>
+                <FormControl isInvalid={!!errors.unitPrice}>
                   <FormLabel>Unit Price</FormLabel>
                   <Input
                     id="unitPrice"
                     placeholder="Enter Price"
                     type="number"
                     {...register('unitPrice', {
-                      required: 'Enter price of item'
+                      required: 'Enter price of item in number'
                     })}
                   />
                   <FormErrorMessage>
