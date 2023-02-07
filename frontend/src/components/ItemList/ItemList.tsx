@@ -26,6 +26,7 @@ const ItemList = () => {
         setItems(data)
       } catch (error) {
         console.log(error)
+        alert(error)
       }
     }
 
@@ -33,7 +34,6 @@ const ItemList = () => {
   }, [])
 
   async function deleteItem(item: IItem) {
-    console.log(item)
     try {
       await ItemsApi.deleteItem(item._id)
       setItems(data.filter(updatedData => updatedData._id !== item._id))
@@ -58,7 +58,16 @@ const ItemList = () => {
       cell: (info) => info.getValue()
     }),
     columnHelper.accessor('itemProps', {
-      header: () => <span>Description</span>
+      header: () => <span>Description</span>,
+      cell: (row) => {
+        const cellData: Array<string> = row.getValue();
+        const list = cellData.map((prop, index) => <li key={index}>{prop}</li>)
+        return (
+          <ul className='cell-list'>
+            {list}
+          </ul>
+        )
+      }
     }),
     columnHelper.accessor('itemUom', {
       header: 'UOM'
