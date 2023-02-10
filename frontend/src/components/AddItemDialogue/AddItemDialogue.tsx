@@ -15,21 +15,32 @@ import {
   Textarea,
   Select,
   Flex,
-  VStack
+  VStack,
+  Checkbox
 } from '@chakra-ui/react'
 import { IItem } from '../../models/lineItem'
 import { useForm } from 'react-hook-form'
 import { IItemInput } from '../../network/itemsApi'
 import * as ItemsApi from '../../network/itemsApi'
+import { useState } from 'react'
+import { FiPlusSquare } from 'react-icons/fi'
 
 interface AddItemDialogue {
-  onItemSaved: (item: IItem) => void,
+  onItemSaved: (item: IItem) => void
+  buttonType: string
 }
 
-const AddItemDialogue = ({ onItemSaved }: AddItemDialogue) => {
+const AddItemDialogue = ({ onItemSaved, buttonType }: AddItemDialogue) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const { register, handleSubmit, reset, formState : {errors, isSubmitting} } = useForm<IItemInput>()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting }
+  } = useForm<IItemInput>()
+
+  const [hasTabularSpecs, setHasTabularSpecs] = useState(false)
 
   async function onSubmit(input: IItemInput) {
     console.log(input)
@@ -45,8 +56,15 @@ const AddItemDialogue = ({ onItemSaved }: AddItemDialogue) => {
 
   return (
     <>
-      <Button onClick={onOpen}>Add New Item</Button>
-
+      <Button
+        className={buttonType}
+        variant="outline"
+        size="lg"
+        leftIcon={<FiPlusSquare />}
+        onClick={onOpen}
+      >
+        Add New Item
+      </Button>
       <Modal
         isOpen={isOpen}
         onClose={onClose}
@@ -113,6 +131,16 @@ const AddItemDialogue = ({ onItemSaved }: AddItemDialogue) => {
                     })}
                   />
                 </FormControl>
+
+                <FormControl>
+                  <Checkbox
+                    id="hasTabularSpecs"
+                    {...register('hasTabularSpecs')}
+                  >
+                    Has specification in table.
+                  </Checkbox>
+                </FormControl>
+
                 <FormControl isInvalid={!!errors.itemUom}>
                   <FormLabel>UOM</FormLabel>
                   <Select

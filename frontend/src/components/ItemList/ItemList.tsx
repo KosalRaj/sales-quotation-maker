@@ -8,7 +8,7 @@ import './ItemList.scss'
 import { IItem } from '../../models/lineItem'
 import { useEffect, useState } from 'react'
 import * as ItemsApi from '../../network/itemsApi'
-import { Container, Flex, IconButton, Spinner } from '@chakra-ui/react'
+import { Box, Flex, IconButton, Spinner } from '@chakra-ui/react'
 import { FiTrash2 } from 'react-icons/fi'
 import AddItemDialogue from '../AddItemDialogue/AddItemDialogue'
 
@@ -33,10 +33,10 @@ const ItemList = () => {
     loadItems()
   }, [])
 
-  async function deleteItem(item: IItem) {
+  async function deleteItem(itemId: string) {
     try {
-      await ItemsApi.deleteItem(item._id)
-      setItems(data.filter(updatedData => updatedData._id !== item._id))
+      await ItemsApi.deleteItem(itemId)
+      setItems(data.filter((updatedData) => updatedData._id !== itemId))
     } catch (error) {
       console.error(error)
       alert(error)
@@ -60,13 +60,9 @@ const ItemList = () => {
     columnHelper.accessor('itemProps', {
       header: () => <span>Description</span>,
       cell: (row) => {
-        const cellData: Array<string> = row.getValue();
+        const cellData: Array<string> = row.getValue()
         const list = cellData.map((prop, index) => <li key={index}>{prop}</li>)
-        return (
-          <ul className='cell-list'>
-            {list}
-          </ul>
-        )
+        return <ul className="cell-list">{list}</ul>
       }
     }),
     columnHelper.accessor('itemUom', {
@@ -84,7 +80,7 @@ const ItemList = () => {
           colorScheme="red"
           icon={<FiTrash2 />}
           onClick={(e) => {
-            deleteItem(row.row.original)
+            deleteItem(row.row.original._id)
             e.stopPropagation()
           }}
         />
@@ -100,8 +96,17 @@ const ItemList = () => {
   })
 
   return (
-    <Container maxW="container.lg" my={8}>
-      <div>
+    <Box>
+      <Flex mb="3ren">
+        <AddItemDialogue
+          onItemSaved={(newItem) => {
+            setItems([...data, newItem])
+          }}
+          buttonType="primary-white"
+        />
+      </Flex>
+
+      <Box className="table-wrapper" mt="2.5rem">
         {data.length === 0 ? (
           <Spinner />
         ) : (
@@ -138,16 +143,8 @@ const ItemList = () => {
             </tbody>
           </table>
         )}
-      </div>
-
-      <Flex mt={4}>
-        <AddItemDialogue
-          onItemSaved={(newItem) => {
-            setItems([...data, newItem])
-          }}
-        />
-      </Flex>
-    </Container>
+      </Box>
+    </Box>
   )
 }
 

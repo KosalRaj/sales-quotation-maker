@@ -1,0 +1,79 @@
+@use '../../styles/abstracts/colors' as colr;
+@use '../../styles/abstracts/mixins' as mxn;
+
+.main-wrapper {
+  display: flex;
+}
+
+.sidebar {
+  height: 100vh;
+  overflow-y: auto;
+  width: 300px;
+  padding-block: 2rem;
+  border-radius: 0 1rem 1rem 0;
+  background: #ffffff;
+  @include mxn.box-shadow-layered;
+
+  &__header {
+    margin-bottom: 4.125rem;
+    padding-inline: 1.5rem;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-inline: 1rem;
+  }
+}
+
+.link {
+  &__item {
+    display: flex;
+    padding: 0.75rem 1rem;
+    gap: 1rem;
+    align-items: center;
+    border-radius: 0.5rem;
+
+    &:hover {
+      background-color: colr.$hover-menu-bg;
+    }
+
+    &.active {
+      background: colr.$primary-light;
+      position: relative;
+      overflow: hidden;
+
+      &:before {
+        position: absolute;
+        content: '';
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 0.25rem;
+        border-radius: 3px;
+        z-index: 1;
+        background-color: colr.$primary;
+      }
+
+      .link__text,
+      .link__icon {
+        color: colr.$primary;
+      }
+    }
+  }
+
+  &__text {
+    font-size: 1rem;
+    line-height: 1.5;
+    flex-grow: 1;
+  }
+
+  &__icon {
+    font-size: 1.5rem;
+  }
+}
+
+.page-content {
+  flex-grow: 1;
+}

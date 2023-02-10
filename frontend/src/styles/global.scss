@@ -1,9 +1,10 @@
+@use 'abstracts' as *;
+
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 1rem;
   line-height: 1.5;
   font-weight: 400;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -17,12 +18,30 @@ img {
   height: auto;
 }
 
-body-wrapper {
-  background-color: #edf2f7;
-  height: calc(100vh - var(--header-height));
-  display: flex;
-  align-items: center;
-  justify-content: center;
+body {
+  margin: 0;
+  padding: 0;
 }
 
+html {
+  box-sizing: border-box;
+}
 
+*,
+*::after,
+*::before {
+  box-sizing: inherit;
+}
+
+#root {
+  background: linear-gradient(to bottom, $primary 350px, $main-bg 0%);
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.table-wrapper {
+  background: #ffffff;
+  border-radius: 0.5rem;
+  padding: 10px;
+  @include box-shadow-layered;
+}

@@ -1,0 +1,8 @@
+@use '../../styles/abstracts/colors' as *;
+@use '../../styles/components/buttons';
+
+.cta-group {
+  display: flex;
+  gap: 2.5rem;
+  margin-top: 2.5rem;
+}

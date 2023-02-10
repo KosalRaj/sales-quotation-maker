@@ -1,4 +1,3 @@
-import { IItem } from '../models/lineItem'
 import { ILineItem, IQuotation } from '../models/quotation'
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
@@ -39,7 +38,9 @@ export interface IQuotationInput {
   updatedAt: string
 }
 
-export async function createQuotation(quotation: IQuotationInput): Promise<IQuotation> {
+export async function createQuotation(
+  quotation: IQuotationInput
+): Promise<IQuotation> {
   const response = await fetchData('/proxy/api/items', {
     method: 'POST',
     headers: {

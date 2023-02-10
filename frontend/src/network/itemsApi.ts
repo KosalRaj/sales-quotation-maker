@@ -1,13 +1,12 @@
-import { IItem } from "../models/lineItem"
+import { IItem } from '../models/lineItem'
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
   const response = await fetch(input, init)
-
   if (response.ok) {
     return response
   } else {
     const errorBody = await response.json()
-    const errorMessage= errorBody.console.error()
+    const errorMessage = errorBody.console.error()
     throw Error(errorMessage)
   }
 }
@@ -16,7 +15,7 @@ export async function fetchItems(): Promise<IItem[]> {
   const response = await fetchData('/proxy/api/items', {
     method: 'GET'
   })
-  
+
   return response.json()
 }
 
@@ -34,22 +33,24 @@ export interface IItemInput {
   itemProps?: [string]
   itemUom?: string
   unitPrice?: number
-
 }
 
 export async function createItem(item: IItemInput): Promise<IItem> {
   const response = await fetchData('/proxy/api/items', {
     method: 'POST',
     headers: {
-      'Content-Type' : 'application/json'
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify(item)
   })
-  
+
   return response.json()
 }
 
-export async function updateItem(itemId: string, item: IItemInput): Promise<IItem> {
+export async function updateItem(
+  itemId: string,
+  item: IItemInput
+): Promise<IItem> {
   const response = await fetchData('proxy/api/items/' + itemId, {
     method: 'PATCH',
     headers: {
@@ -58,9 +59,17 @@ export async function updateItem(itemId: string, item: IItemInput): Promise<IIte
     body: JSON.stringify(item)
   })
 
-  return response.json();
+  return response.json()
 }
 
 export async function deleteItem(itemId: string) {
-  await fetchData('/proxy/api/items/' + itemId, { method: "DELETE" })
+  await fetchData('/proxy/api/items/' + itemId, { method: 'DELETE' })
+}
+
+export async function findItemByName(itemName: string): Promise<IItem[]> {
+  const response = await fetchData('/proxy/api/items/find/' + itemName, {
+    method: 'GET'
+  })
+
+  return response.json()
 }

@@ -1,0 +1,24 @@
+@use '../abstracts/colors' as *;
+
+button {
+  &.primary {
+    &-white {
+      background: #ffffff;
+      color: $primary;
+
+      &:hover {
+        background: $primary-lighter;
+      }
+    }
+  }
+
+  &.secondary {
+    &-white {
+      color: #ffffff;
+
+      &:hover {
+        background: $black-lightest;
+      }
+    }
+  }
+}

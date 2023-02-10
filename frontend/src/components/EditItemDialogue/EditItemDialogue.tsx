@@ -27,10 +27,17 @@ interface EditItemDialogue {
   onItemSaved: (item: IItem) => void,
 }
 
-const EditItemDialogue = ({ onItemSaved }: EditItemDialogue) => {
+const EditItemDialogue = ({ itemToEdit, onItemSaved }: EditItemDialogue) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const { register, handleSubmit, formState : {errors, isSubmitting} } = useForm<IItemInput>()
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<IItemInput>({
+    defaultValues: {
+      itemName: itemToEdit?.itemName || "",
+      manufacturer: itemToEdit?.manufacturer || "",
+      itemModel: itemToEdit?.itemModel || "",
+      itemProps: itemToEdit?.itemProps ||
+    }
+  })
 
   async function onSubmit(input: IItemInput) {
     console.log(input)
@@ -102,10 +109,10 @@ const EditItemDialogue = ({ onItemSaved }: EditItemDialogue) => {
                   <FormLabel>Item Props</FormLabel>
                   <Textarea
                     id="itemProps"
-                    placeholder="List Properties"
+                    placeholder="List Properties, Each in new line"
                     {...register('itemProps', {
-                      setValueAs: v => {
-                        if (typeof v === 'string' && v.length > 0 ) {
+                      setValueAs: (v) => {
+                        if (typeof v === 'string' && v.length > 0) {
                           return v.split('\n')
                         }
                         return []
@@ -113,7 +120,7 @@ const EditItemDialogue = ({ onItemSaved }: EditItemDialogue) => {
                     })}
                   />
                 </FormControl>
-                <FormControl>
+                <FormControl isInvalid={!!errors.itemUom}>
                   <FormLabel>UOM</FormLabel>
                   <Select
                     id="itemUom"
@@ -130,7 +137,7 @@ const EditItemDialogue = ({ onItemSaved }: EditItemDialogue) => {
                     {errors.itemUom && errors.itemUom?.message}
                   </FormErrorMessage>
                 </FormControl>
-                <FormControl>
+                <FormControl isInvalid={!!errors.unitPrice}>
                   <FormLabel>Unit Price</FormLabel>
                   <Input
                     id="unitPrice"

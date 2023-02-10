@@ -2,6 +2,7 @@ import 'dotenv/config'
 import express, { NextFunction, Request, Response } from 'express'
 import quotationsRoutes from './routes/quotations'
 import itemsRoutes from './routes/items'
+import customerRoutes from './routes/customer'
 import morgan from 'morgan'
 import createHttpError, { isHttpError } from 'http-errors'
 
@@ -13,6 +14,7 @@ app.use(express.json())
 
 app.use('/api/quotations', quotationsRoutes)
 app.use('/api/items', itemsRoutes)
+app.use('/api/customers', customerRoutes)
 
 app.use((req, res, next) => {
   next(createHttpError(404, 'Endpoint not found'))

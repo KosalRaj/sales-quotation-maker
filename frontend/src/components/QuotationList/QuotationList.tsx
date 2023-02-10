@@ -8,7 +8,7 @@ import './QuotationList.styles.scss'
 import { IQuotation } from '../../models/quotation'
 import { useEffect, useState } from 'react'
 import * as QuotationApi from '../../network/quotationApi'
-import { Container, Spinner } from '@chakra-ui/react'
+import { Box, Spinner } from '@chakra-ui/react'
 
 const columnHelper = createColumnHelper<IQuotation>()
 
@@ -52,8 +52,8 @@ const QuotationList = () => {
   })
 
   return (
-    <Container maxW="container.lg" my={8}>
-      <div>
+    <Box>
+      <Box className="table-wrapper">
         {data.length === 0 ? (
           <Spinner />
         ) : (
@@ -90,8 +90,8 @@ const QuotationList = () => {
             </tbody>
           </table>
         )}
-      </div>
-    </Container>
+      </Box>
+    </Box>
   )
 }
 

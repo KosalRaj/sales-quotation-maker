@@ -21,8 +21,7 @@ const itemSchema = new Schema(
     manufacturer: String,
     itemModel: {
       type: String,
-      index: true,
-      unique: true
+      index: true
     },
     hasTabularSpecs: {
       type: Boolean,

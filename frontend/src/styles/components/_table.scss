@@ -1,0 +1,35 @@
+@use '../abstracts/mixins' as *;
+
+.table {
+  width: 100%;
+
+  &-wrapper {
+    background: #ffffff;
+    border-radius: 0.5rem;
+    padding: 10px;
+    @include box-shadow-layered;
+  }
+
+  &__body {
+    border-bottom: 1px solid lightgray;
+  }
+}
+
+.th {
+  border-bottom: 2px solid #808080;
+  border-right: 1px solid lightgray;
+  padding: 2px 4px;
+}
+
+.cell-list {
+  padding-left: 1.25rem;
+}
+
+td {
+  vertical-align: top;
+  padding: 0.25rem 0.5rem;
+}
+
+tbody > tr:not(:last-child) {
+  border-bottom: 1px solid #c8c8c8;
+}
