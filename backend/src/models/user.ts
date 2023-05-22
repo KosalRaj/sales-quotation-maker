@@ -1,4 +1,5 @@
 import { InferSchemaType, model, Schema } from 'mongoose'
+import bcrypt from 'bcrypt'
 
 const userSchema = new Schema(
   {
@@ -16,9 +17,9 @@ const userSchema = new Schema(
       type: String,
       required: true
     },
-    email: {
+    password: {
       type: String,
-      unique: true
+      required: true
     },
     role: {
       type: String,
@@ -28,6 +29,21 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 )
+
+// Match user entered password to hashed password in database
+userSchema.methods.matchPassword = async function (enteredPassword: string) {
+  return await bcrypt.compare(enteredPassword, this.password)
+}
+
+// Encrypt password using bcrypt
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    next()
+  }
+
+  const salt = await bcrypt.genSalt(10)
+  this.password = await bcrypt.hash(this.password, salt)
+})
 
 type UserType = InferSchemaType<typeof userSchema>
 
