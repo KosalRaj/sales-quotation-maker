@@ -9,27 +9,135 @@ import {
   FormErrorMessage,
   Heading,
   Select,
-  Input,
-  Button
+  NumberInput,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  NumberInputField
 } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
+import { IItem, ITabularSpecs } from '../../models/lineItem'
 import { IQuotation, ILineItem } from '../../models/quotation'
 import * as QuotationApi from '../../network/quotationApi'
 import { useForm } from 'react-hook-form'
 import {
-  createColumnHelper,
+  /* createColumnHelper, */
+  ColumnDef,
   flexRender,
   getCoreRowModel,
-  useReactTable
+  useReactTable,
+  RowData
 } from '@tanstack/react-table'
 import ItemSearch from '../ItemSearch/ItemSearch'
 
+export interface ITableItem {
+  _id: string
+  itemName: string
+  manufacturer?: string
+  itemModel?: string
+  hasTabularSpecs?: boolean
+  itemSpecs?: ITabularSpecs[]
+  itemProps?: string[]
+  itemUom: string
+  unitPrice: number
+  itemQuantity: number
+}
+
+const DescriptionColumn = (row: IItem) => {
+  return (
+    <>
+      <div>{row.itemName}</div>
+      <div>
+        <span>Make: {row.manufacturer},</span>
+        <span>Model: {row.itemModel}</span>
+      </div>
+      <div>
+        <ul>
+          {row.itemProps?.length !== 0 || row.itemProps !== undefined
+            ? row.itemProps?.map((itemProp: string, index: number) => (
+                <li key={index}>{itemProp}</li>
+              ))
+            : null}
+        </ul>
+      </div>
+    </>
+  )
+}
+
+interface EmptyTableProps {
+  colspan: number
+}
+const EmptyTable = ({ colspan }: EmptyTableProps) => {
+  return (
+    <tr>
+      <td className="empty-table" colSpan={colspan}>
+        Add items to table
+      </td>
+    </tr>
+  )
+}
+
+declare module '@tanstack/react-table' {
+  interface TableMeta<TData extends RowData> {
+    updateData: (rowIndex: number, columnId: string, value: unknown) => void
+  }
+}
+
 const CreateQuotation = () => {
   const [lastQuotationId, setLastQuotationId] = useState('')
-  const [lineItemCount, setLineItemCount] = useState(0)
-  const [data, setData] = useState([])
+  let [lineItemCount, setLineItemCount] = useState(0)
+  const [data, setData] = useState<Array<ITableItem>>([
+    // {
+    //   _id: '63cefb9989c9aa60768f1fe3',
+    //   itemName: 'Example Item 1',
+    //   manufacturer: 'Example Manufacturer 1',
+    //   itemModel: 'EXAMPLE123',
+    //   hasTabularSpecs: true,
+    //   itemSpecs: [
+    //     {
+    //       key: 'Color',
+    //       value: 'Blue',
+    //       _id: '63cefb9989c9aa60768f1fe4'
+    //     },
+    //     {
+    //       key: 'Weight',
+    //       value: '1 kg',
+    //       _id: '63cefb9989c9aa60768f1fe5'
+    //     }
+    //   ],
+    //   itemProps: ['Example Property 1', 'Example Property 2'],
+    //   itemUom: 'each',
+    //   unitPrice: 100,
+    //   itemQuantity: 2
+    // },
+    // {
+    //   _id: '63cefb9989c5aa60768f1fe3',
+    //   itemName: 'Example Item 2',
+    //   manufacturer: 'Example Manufacturer 2',
+    //   itemModel: 'EXAMPLE1234',
+    //   hasTabularSpecs: false,
+    //   itemSpecs: [],
+    //   itemProps: ['Example Property 1', 'Example Property 2'],
+    //   itemUom: 'pcs',
+    //   unitPrice: 150,
+    //   itemQuantity: 4
+    // }
+  ])
+
+  const addLineItem = (item: ITableItem) => {
+    setData([...data, item])
+  }
+
+  const updateLineItem = (index: number, updatedItem: ITableItem) => {
+    setData(
+      data.map((item, i) => {
+        return i === index ? updatedItem : item
+      })
+    )
+  }
 
   const currentDate = new Date(Date.now())
+
   const formattedDate = currentDate.toLocaleDateString('en-US', {
     year: 'numeric',
     month: '2-digit',
@@ -55,55 +163,92 @@ const CreateQuotation = () => {
     formState: { errors, isSubmitting }
   } = useForm<IQuotation>()
 
-  const columnHelper = createColumnHelper<ILineItem>()
+  // Give our default column cell renderer editing superpowers!
+  const defaultColumn: Partial<ColumnDef<ITableItem>> = {
+    cell: ({ getValue, row: { index }, column: { id }, table }) => {
+      const initialValue = getValue()
+      // We need to keep and update the state of the cell normally
+      const [value, setValue] = useState(initialValue)
 
-  const columns = [
-    columnHelper.accessor((row) => row, {
-      header: 'Qty',
-      id: 'qty',
-      cell: (row) => {
-        console.log(row)
+      // When the input is blurred, we'll call our table meta's updateData function
+      const onBlur = () => {
+        table.options.meta?.updateData(index, id, value)
       }
-    })
-    // columnHelper.accessor('itemModel', {
-    //   header: 'Model',
-    //   cell: (info) => info.getValue()
-    // }),
-    // columnHelper.accessor('itemProps', {
-    //   header: () => <span>Description</span>,
-    //   cell: (row) => {
-    //     const cellData: Array<string> = row.getValue()
-    //     const list = cellData.map((prop, index) => <li key={index}>{prop}</li>)
-    //     return <ul className="cell-list">{list}</ul>
-    //   }
-    // }),
-    // columnHelper.accessor('itemUom', {
-    //   header: 'UOM'
-    // }),
-    // columnHelper.accessor('unitPrice', {
-    //   header: 'Unit Price'
-    // }),
-    // columnHelper.accessor((row) => row, {
-    //   id: 'deleteItem',
-    //   cell: (row) => (
-    //     <IconButton
-    //       aria-label="Delete item"
-    //       variant="link"
-    //       colorScheme="red"
-    //       icon={<FiTrash2 />}
-    //       onClick={(e) => {
-    //         deleteItem(row.row.original._id)
-    //         e.stopPropagation()
-    //       }}
-    //     />
-    //   ),
-    //   header: ''
-    // })
-  ]
+
+      // If the initialValue is changed external, sync it up with our state
+      useEffect(() => {
+        setValue(initialValue)
+      }, [initialValue])
+
+      if (id === 'itemQuantity') {
+        return (
+          //   <Input
+          //   value={value as string}
+          //   onChange={(e) => setValue(e.target.value)}
+          //   onBlur={onBlur}
+          // />
+          <NumberInput
+            value={value as string}
+            onChange={(value) => setValue(value)}
+            onBlur={onBlur}
+          >
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+        )
+      }
+
+      return value
+    }
+  }
+
+  const columns = useMemo<ColumnDef<ITableItem>[]>(
+    () => [
+      {
+        id: 'lineItemCount',
+        header: 'SN',
+        cell: (props) => Number(props.row.id) + 1
+      },
+      {
+        // header: 'Description',
+        // id: 'description',
+        // cell: (info) => info.getValue()
+        accessorKey: 'itemName',
+        header: 'Item Name'
+      },
+      {
+        accessorKey: 'itemQuantity',
+        header: 'Qty'
+      },
+      {
+        accessorKey: 'itemUom',
+        header: 'UOM'
+      },
+      {
+        accessorKey: 'unitPrice',
+        header: 'Unit Price'
+      },
+      {
+        id: 'totalItemAmount',
+        header: 'Total Amount',
+        cell: (info) => {
+          const itemQty = info.row?.original?.itemQuantity
+          const itemPrice = info.row?.original?.unitPrice
+          return itemQty * itemPrice
+        },
+        footer: 'Total Amount'
+      }
+    ],
+    []
+  )
 
   const table = useReactTable({
     data,
     columns,
+    defaultColumn,
     getCoreRowModel: getCoreRowModel()
   })
 
@@ -197,7 +342,7 @@ const CreateQuotation = () => {
           </FormControl>
         </Flex>
 
-        <table className="table">
+        <table className="table quotation-items-table">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -215,20 +360,27 @@ const CreateQuotation = () => {
             ))}
           </thead>
           <tbody className="table__body">
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
+            {data.length > 0 ? (
+              table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : (
+              <EmptyTable colspan={columns.length} />
+            )}
           </tbody>
         </table>
       </form>
 
-      <ItemSearch />
+      <ItemSearch addLineItem={addLineItem} />
     </Container>
   )
 }

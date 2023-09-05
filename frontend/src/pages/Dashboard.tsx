@@ -1,9 +1,8 @@
 import { Heading, Button } from '@chakra-ui/react'
 import { FiFilePlus, FiPlusSquare } from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
-import AddItemDialogue from '../../components/AddItemDialogue'
-import PageWrapper from '../../components/PageWrapper'
-import './Dashboard.styles.scss'
+import AddItemDialogue from '../components/AddItemDialogue'
+import PageWrapper from '../components/PageWrapper'
 
 const Dashboard = () => {
   return (

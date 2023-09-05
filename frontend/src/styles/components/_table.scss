@@ -17,8 +17,11 @@
 
 .th {
   border-bottom: 2px solid #808080;
-  border-right: 1px solid lightgray;
   padding: 2px 4px;
+
+  &:not(:last-child) {
+    border-right: 1px solid lightgray;
+  }
 }
 
 .cell-list {
@@ -32,4 +35,18 @@ td {
 
 tbody > tr:not(:last-child) {
   border-bottom: 1px solid #c8c8c8;
+}
+
+.quotation-items-table {
+  box-shadow: inset 0px 0px 0px 1px #c8c8c8;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-block: 1rem;
+}
+
+.empty-table {
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 12px;
+  color: #c8c8c8;
 }

@@ -1,4 +1,8 @@
 @use 'abstracts' as *;
+@use 'vendors';
+@use 'layout';
+@use 'pages';
+@use 'components';
 
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;

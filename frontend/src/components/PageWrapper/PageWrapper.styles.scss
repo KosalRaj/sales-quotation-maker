@@ -1,5 +1,17 @@
+@use '../../styles/vendors/include-media' as *;
+
 .page-wrapper {
   padding-inline: 5rem;
   padding-block: 3.25rem;
   align-self: flex-start;
+  flex-grow: 1;
+  height: 100vh;
+  height: 100dvh;
+  overflow: auto;
+}
+
+@include media('<1280px') {
+  .page-wrapper {
+    padding-inline: 2rem;
+  }
 }

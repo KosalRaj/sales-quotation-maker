@@ -1,8 +1,8 @@
 import { Button, Flex, Heading } from '@chakra-ui/react'
 import { FiFilePlus } from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
-import PageWrapper from '../../components/PageWrapper'
-import QuotationList from '../../components/QuotationList'
+import PageWrapper from '../components/PageWrapper'
+import QuotationList from '../components/QuotationList'
 
 const Quotations = () => {
   return (

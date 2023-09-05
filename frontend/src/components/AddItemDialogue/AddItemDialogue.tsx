@@ -141,6 +141,13 @@ const AddItemDialogue = ({ onItemSaved, buttonType }: AddItemDialogue) => {
                   </Checkbox>
                 </FormControl>
 
+                {/* {hasTabularSpecs && ( */}
+                {/*   <FormControl> */}
+                {/**/}
+                {/*   </FormControl> */}
+                {/* ) */}
+                {/* } */}
+
                 <FormControl isInvalid={!!errors.itemUom}>
                   <FormLabel>UOM</FormLabel>
                   <Select

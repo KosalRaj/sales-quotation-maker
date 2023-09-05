@@ -1,23 +1,27 @@
 import { RequestHandler } from 'express'
 import createHttpError from 'http-errors'
-import UserModel from '../models/user'
+import validateRequiredField from '../util/validateRequiredField'
+import generateToken from '../util/generateToken'
+import { UserModel } from '../models/user'
 import bcrypt from 'bcrypt'
 
-export const getAuthenticatedUser: RequestHandler = async (req, res, next) => {
-  try {
-    const user = await UserModel.findById(req.session.userId)
-      .select('+email')
-      .exec()
-    res.status(200).json(user)
-  } catch (error) {
-    next(error)
-  }
-}
+// export const getAuthenticatedUser: RequestHandler = async (req, res, next) => {
+//   try {
+//     const user = await UserModel.findById(req.session.userId)
+//       .select('+email')
+//       .exec()
+//     res.status(200).json(user)
+//   } catch (error) {
+//     next(error)
+//   }
+// }
 
 interface SignUpBody {
   username?: string
-  email?: string
-  password?: string
+  firstname?: string
+  lastname?: string
+  role?: string
+  passwordRaw?: string
 }
 
 export const signUp: RequestHandler<
@@ -26,46 +30,51 @@ export const signUp: RequestHandler<
   SignUpBody,
   unknown
 > = async (req, res, next) => {
-  const username = req.body.username
-  const email = req.body.email
-  const passwordRaw = req.body.password
+  // const username = req.body.username
+  // const email = req.body.email
+  // const passwordRaw = req.body.password
 
+  const { username, firstname, lastname, passwordRaw, role } = req.body
   try {
-    if (!username || !email || !passwordRaw) {
+    if (!username || !firstname || !lastname || role || !passwordRaw) {
       throw createHttpError(400, 'Parameters missing')
     }
 
-    const existingUsername = await UserModel.findOne({
+    const userExists = await UserModel.findOne({
       username: username
     }).exec()
 
-    if (existingUsername) {
+    if (userExists) {
       throw createHttpError(
         409,
         'Username already taken. Please choose a different one or log in instead.'
       )
     }
 
-    const existingEmail = await UserModel.findOne({ email: email }).exec()
-
-    if (existingEmail) {
-      throw createHttpError(
-        409,
-        'A user with this email address already exists. Please log in instead.'
-      )
-    }
-
-    const passwordHashed = await bcrypt.hash(passwordRaw, 10)
-
-    const newUser = await UserModel.create({
+    const user = await UserModel.create({
       username: username,
-      email: email,
-      password: passwordHashed
+      firstname: firstname,
+      lastname: lastname,
+      role: role,
+      password: passwordRaw
     })
 
-    req.session.userId = newUser._id
+    if (user) {
+      generateToken(res, user._id)
 
-    res.status(201).json(newUser)
+      res.status(201).json({
+        _id: user._id,
+        username: user.username,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        role: user.role
+      })
+    } else {
+      res.status(400)
+      throw createHttpError(400, 'Invalid user data')
+    }
+
+    res.status(201).json(user)
   } catch (error) {
     next(error)
   }

@@ -11,6 +11,7 @@ import * as ItemsApi from '../../network/itemsApi'
 import { Box, Flex, IconButton, Spinner } from '@chakra-ui/react'
 import { FiTrash2 } from 'react-icons/fi'
 import AddItemDialogue from '../AddItemDialogue/AddItemDialogue'
+import HandsOnTableList from './HandsOnTableList'
 
 // interface ItemListProps {
 //   items: IItem[]

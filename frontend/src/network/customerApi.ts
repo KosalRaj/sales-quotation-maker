@@ -58,6 +58,6 @@ export async function updateCustomer(
   return response.json()
 }
 
-export async function deleteItem(customerId: string) {
+export async function deleteCustomer(customerId: string) {
   await fetchData('/proxy/api/customers/' + customerId, { method: 'DELETE' })
 }

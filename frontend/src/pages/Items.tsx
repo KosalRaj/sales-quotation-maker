@@ -1,6 +1,6 @@
 import { Heading } from '@chakra-ui/react'
-import ItemList from '../../components/ItemList'
-import PageWrapper from '../../components/PageWrapper'
+import ItemList from '../components/ItemList'
+import PageWrapper from '../components/PageWrapper'
 
 const Items = () => {
   return (

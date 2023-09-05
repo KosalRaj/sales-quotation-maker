@@ -1,6 +1,6 @@
 import { Box, Heading } from '@chakra-ui/react'
-import CreateQuotation from '../../components/CreateQuotation'
-import PageWrapper from '../../components/PageWrapper'
+import CreateQuotation from '../components/CreateQuotation'
+import PageWrapper from '../components/PageWrapper'
 
 const CreateNewQuotation = () => {
   return (
